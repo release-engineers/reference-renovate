@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Validate Dockerfile
+        run: |
+          docker build -t dummy .
+          OUTPUT=$(docker run dummy "echo 123")
+          OUTPUT_EXPECTED="123"
+          if [ "$OUTPUT" != "$OUTPUT_EXPECTED" ]; then
+            echo "Output does not match expected output"
+            echo "Output: $OUTPUT"
+            echo "Expected: $OUTPUT_EXPECTED"
+            exit 1
+          fi

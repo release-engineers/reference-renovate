@@ -1,0 +1,27 @@
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at 00:00
+    - cron: '0 2 * * 0' # Every Sunday at 02:00
+  workflow_dispatch:
+
+jobs:
+  test_schedule:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          LOG_LEVEL: debug
+          TOKEN: ${{ secrets.RENOVATE_GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          npx renovate --token "${TOKEN}" \
+            --onboarding=false \
+            --dependency-dashboard=false \
+            --git-author='Philipp Gayret <philipp@release-engineers.com>' \
+            --branch-prefix='renovate/' \
+            --semantic-commits=enabled \
+            --require-config=optional \
+            --automerge=true \
+            --automerge-type=branch \
+            --pr-creation='not-pending' \
+            "${GITHUB_REPOSITORY}"
